@@ -26,7 +26,7 @@ def viela_id(vielasID):
     # meklējam vielu sarakstā
     for v in dati.vielas:
         # vielas ID ir skaitlis, jāpārveido datu tips
-        if v["id"] == int(vielasID):
+        if str(v["id"]) == vielasID:
             viela = v
     return jsonify(viela)
 

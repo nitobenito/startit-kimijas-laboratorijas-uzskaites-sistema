@@ -1,5 +1,5 @@
 from flask import Flask, json, jsonify, render_template, request
-import dati
+import requests, sqlite3
 
 
 app = Flask(__name__)
@@ -7,58 +7,84 @@ app = Flask(__name__)
 # nepieciešams garum- un mīkstinājumzīmēm json formātā
 app.config['JSON_AS_ASCII'] = False
 
-
 @app.route('/')
 def index():
     return render_template("index.html")
-
 
 @app.route('/publiski')
 def publiski():
     return render_template("pub_data.html")
 
-
 @app.route('/pieslegties')
 def pieslegties():
     return render_template("login.html")
-
 
 @app.route('/uzskaite')
 def uzskaite():
     return render_template("vielu_aprikojuma_uzskaite.html")
 
-
 @app.route('/pievienot')
 def pievienot():
     return render_template("pievienot_vielu_aprikojumu.html")
-
 
 @app.route('/lietotajs')
 def lietotajs():
     return render_template("user_menu.html")
 
-
 @app.route('/api/v1/vielas', methods=['GET'])
 def vielas():
-    # atveram datni
-    with open("dati/vielas.json", "r") as f:
-        # ielasām un pārvēršam par json
-        dati = json.loads(f.read())
-    
-    # pārveidojam par string pirms atgriežam
-    return jsonify(dati)
+  try:
+    conn = sqlite3.connect('Dati.db')
+    c = conn.cursor()
+    c.execute("SELECT ID, NOSAUKUMS, TIPS, APAKSTIPS, SKAITS, DAUDZUMS, MERVIENIBAS, KOMENTARI FROM Vielas")
+    data = c.fetchall()
+    # datus no db ielasa masīvā
+    jsonData = []
+    column_names = ['id', 'nosaukums', 'tips', 'apakstips', 'skaits', 'daudzums', 'mervienibas', 'komentari']
+    for row in data:
+      info = dict(zip(column_names, row))
+      jsonData.append(info)
+    # izveido atbildi ko sūtīt web lapai
+    atbilde={"atb":""}
+    atbilde["dati"]=jsonData
+  except:
+    # atbilde, ja problēmas ar db
+    atbilde={"atb":"Vielas nedabūju"}
+    atbilde["dati"]=[]
+  finally:
+    conn.commit()
+    c.close()
+    conn.close()    
+  return atbilde
+
 
 
 @app.route('/api/v1/inventars', methods=['GET'])
 def inventars():
-    # atveram datni
-    with open("dati/inventars.json", "r") as f:
-        # ielasām un pārvēršam par json
-        dati = json.loads(f.read())
-    
-    # pārveidojam par string pirms atgriežam
-    return jsonify(dati)
-
+  try:
+    conn = sqlite3.connect('Dati.db')
+    c = conn.cursor()
+    c.execute("SELECT ID, NOSAUKUMS, TIPS, APAKSTIPS, '' AS DAUDZUMS, SKAITS, KOMENTARI FROM Inventars")
+    data = c.fetchall()
+    # datus no db ielasa stringā
+    jsonData = ""
+    column_names = ['id','nosaukums','tips','apakstips','daudzums','skaits', 'komentari']
+    for row in data:
+      info = dict(zip(column_names, row))
+      jsonData = jsonData + json.dumps(info) + ','
+    jsonData = jsonData[:-1]
+    jsonData = "[" + jsonData + "]"
+    # izveido atbildi, datus pārveidojot par json objektu, jo to gaida weblapa
+    atbilde={"atb":""}
+    atbilde["dati"]=json.loads(jsonData)
+  except:
+    atbilde={"atb":"Inventāru nedabūju"}
+    atbilde["dati"]=[]
+  finally:    
+    conn.commit()
+    c.close()
+    conn.close()    
+    return atbilde
 
 @app.route('/api/v1/viela/<vielasID>', methods=['GET'])
 def viela_id(vielasID):

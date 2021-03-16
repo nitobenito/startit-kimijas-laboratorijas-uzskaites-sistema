@@ -7,31 +7,38 @@ async function raditNoliktavasDatus(tipsAtlase)
   if(tipsAtlase==undefined)
   {
     let vielasNoServera = await fetch('/api/v1/vielas');
-    jsonVielas = await vielasNoServera.json();
+    atbilde = await vielasNoServera.json();
+    if (atbilde.atb.length>0)alert(atbilde.atb);
+    jsonVielas=atbilde.dati;
     jsonVielas = pievienotIerakstuParKategoriju(jsonVielas, 'viela');
     //
     let inventarsNoServera = await fetch('/api/v1/inventars');
-    jsonInventars = await inventarsNoServera.json();
+    atbilde = await inventarsNoServera.json();
+    if (atbilde.atb.length>0)alert(atbilde.atb);
+    jsonInventars=atbilde.dati;
     jsonInventars = pievienotIerakstuParKategoriju(jsonInventars, 'inventars');
   }
   else if(tipsAtlase=='viela')
   {
     //jsonVielas = await iegutDatusNoApi('/api/v1/vielas');
     let vielasNoServera = await fetch('/api/v1/vielas');
-    jsonVielas = await vielasNoServera.json();
+    atbilde = await vielasNoServera.json();
+    if (atbilde.atb.length>0)alert(atbilde.atb);
+    jsonVielas=atbilde.dati;
     jsonVielas = pievienotIerakstuParKategoriju(jsonVielas, 'viela');
   }
   else if(tipsAtlase=='aprikojums')
   {
     //jsonInventars = await iegutDatusNoApi('/api/v1/inventars');
     let inventarsNoServera = await fetch('/api/v1/inventars');
-    jsonInventars = await inventarsNoServera.json();
+    atbilde = await inventarsNoServera.json();
+    if (atbilde.atb.length>0)alert(atbilde.atb);
+    jsonInventars=atbilde.dati;
     jsonInventars = pievienotIerakstuParKategoriju(jsonInventars, 'inventars');
   }
 
 
   let datiNoliktava = jsonVielas.concat(jsonInventars);
-  console.log(datiNoliktava);
 
   let tabula = document.querySelector('#pub_data tbody');
   tabula.innerHTML = '';

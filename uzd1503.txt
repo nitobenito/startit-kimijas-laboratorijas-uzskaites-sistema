@@ -1,0 +1,10 @@
+Aicinu pievērst uzmanību 15.03 kursu pēdējā uzdevuma risinājuma iespējām.
+Failā serveris.py routes @app.route('/api/v1/inventars', methods=['GET']) un @app.route('/api/v1/vielas', methods=['GET']) realizētas nedaudz atšķirīgi, lai būtu 2 piemēri.
+Vielas no DB ielasa masīvā, inventāru Stringā. 
+Der abi paņēmieni, taču atšķiras datu tālākā sagatavošana nosūtīšanai uz weblapu (frontend).
+Abos gadījumos jārēķinās, ka weblapa gaiada json.
+Abos gadījumos sūta DB datus un informāciju par kļūdu.
+Piemērs izveidots tā, kā ja kļūdas nav, informācija ir tukša virkne, jo būtu lieki vēl kaut ko paziņot, ja jau dati ir veiksmīgi dabūti.
+Tāpēc jāskatās izmaiņas arī main.js datnē:
+sākumā js bija gatavs saņemt tikai DB datus, tagad jāsaņem vēl informācīja.
+Tāpēc saņemtā atbilde satur divas daļas, un tās atbilstoši tālāk jāizmanto.
